@@ -528,10 +528,11 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, int algo, cons
     }
     else
     {
-        if (pindexLast->nHeight < 340000){
-            return GetNextTargetRequired_V1(pindexLast, algo, params);
+        if(pindexLast->nHeight < params.HeightAndMedianTimeDifficultyAdjustmentPerAlgo) {
+             return DarkGravityWave3(pindexLast, algo, params); 
         }
-        return LwmaCalculateNextWorkRequired(pindexLast, algo, params); 
+        
+        return GetNextWorkRequiredV4(pindexLast, params, algo);
     }
 }
 

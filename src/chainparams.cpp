@@ -285,17 +285,31 @@ public:
         consensus.STEALTH_TX_SWITCH_BLOCK = 1824150;
         consensus.FlexibleMiningAlgorithms = 2042000;
         consensus.CLOCK_DRIFT_FORK = 2218500;
+        consensus.HeightAndMedianTimeDifficultyAdjustmentPerAlgo = 10;
         
         consensus.BIP34Height = 0;
         consensus.BIP65Height = 0; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
         consensus.BIP66Height = 0; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
         consensus.powLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000"); // FIXME: change to actual genesis limit
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // 1 day
-        consensus.nPowTargetSpacing = 45;
+        
+        consensus.nPowTargetTimespan = 30;
+        consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
-        consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
+        consensus.nRuleChangeActivationThreshold = 10;
+        consensus.nMinerConfirmationWindow = 200;
+
+        // V4 difficulty adjustments ... 
+        consensus.nAveragingInterval = 10; // look for 10 blocks in the past
+        consensus.multiAlgoTargetSpacingV4 = 30 * 5; // Try to archive a NUM_ALGO * 30 secs spacing
+        consensus.nLocalTargetAdjustment = 4; // Local algo adjustments per time restrictions
+        consensus.nMaxAdjustDownV4 = 16; // maximum down adjustment capability
+        consensus.nMaxAdjustUpV4 = 8; // maximum up adjustment capability
+        /* 10 * NUM_ALGOS * 30 */
+        consensus.nAveragingTargetTimespanV4 = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacingV4; 
+        consensus.nMinActualTimespanV4 = consensus.nAveragingTargetTimespanV4 * (100 - consensus.nMaxAdjustUpV4) / 100;
+        consensus.nMaxActualTimespanV4 = consensus.nAveragingTargetTimespanV4 * (100 + consensus.nMaxAdjustDownV4) / 100;
+
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -312,9 +326,6 @@ public:
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000000000000000f");
-
-        // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x65b4e101cacf3e1e4f3a9237e3a74ffd1186e595d8b78fa8ea22c21ef5bf9347"); //also genesis 
 
         pchMessageStart[0] = 0xcd;
         pchMessageStart[1] = 0xf2;
